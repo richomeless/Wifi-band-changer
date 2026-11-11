@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="Wi-Fi Band"
+        android:theme="@style/AppTheme">
+
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+        <receiver android:name=".BandReceiver" android:exported="false" />
+
+        <receiver android:name=".LargeGlassProvider" android:exported="true" android:label="Wi-Fi Band · Large glass">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info_large" />
+        </receiver>
+        <receiver android:name=".LargeSolidProvider" android:exported="true" android:label="Wi-Fi Band · Large solid">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info_large" />
+        </receiver>
+        <receiver android:name=".SmallGlassProvider" android:exported="true" android:label="Wi-Fi Band · Small glass">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info_small" />
+        </receiver>
+        <receiver android:name=".SmallSolidProvider" android:exported="true" android:label="Wi-Fi Band · Small solid">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info_small" />
+        </receiver>
+    </application>
+</manifest>

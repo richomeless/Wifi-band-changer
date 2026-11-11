@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="glass_bg">#38FFFFFF</color>
+    <color name="glass_stroke">#66FFFFFF</color>
+    <color name="glass_btn">#30FFFFFF</color>
+    <color name="glass_text">#FFFFFFFF</color>
+    <color name="glass_dim">#CCFFFFFF</color>
+    <color name="glass_active_bg">@android:color/system_accent1_200</color>
+    <color name="glass_active_text">@android:color/system_accent1_900</color>
+    <color name="solid_bg">@android:color/system_accent2_100</color>
+    <color name="solid_btn">@android:color/system_accent2_200</color>
+    <color name="solid_text">@android:color/system_accent2_900</color>
+    <color name="solid_dim">@android:color/system_accent2_700</color>
+    <color name="solid_active_bg">@android:color/system_accent1_600</color>
+    <color name="solid_active_text">@android:color/system_accent1_0</color>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_glass"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:text="Wi-Fi band"
+        android:textColor="@color/glass_text"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:maxLines="1"
+        android:text="5 GHz"
+        android:textColor="@color/glass_dim"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:orientation="horizontal">
+
+        <TextView android:id="@+id/btn5" android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:clickable="true"
+            android:layout_height="match_parent"
+            android:background="@drawable/btn_glass"
+            android:text="5 GHz"
+            android:textColor="@color/glass_text" />
+
+        <TextView android:id="@+id/btn24" android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:clickable="true"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/btn_glass"
+            android:text="2.4 GHz"
+            android:textColor="@color/glass_text" />
+
+        <TextView android:id="@+id/btnauto" android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:clickable="true"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/btn_glass"
+            android:text="Auto"
+            android:textColor="@color/glass_text" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_glass"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="6dp">
+
+    <TextView android:id="@+id/btn5" android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:clickable="true"
+        android:layout_height="match_parent"
+        android:background="@drawable/btn_glass"
+        android:text="5 GHz"
+        android:textColor="@color/glass_text" />
+
+    <TextView android:id="@+id/btn24" android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:clickable="true"
+        android:layout_height="match_parent"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/btn_glass"
+        android:text="2.4 GHz"
+        android:textColor="@color/glass_text" />
+
+    <TextView android:id="@+id/btnauto" android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:clickable="true"
+        android:layout_height="match_parent"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/btn_glass"
+        android:text="Auto"
+        android:textColor="@color/glass_text" />
+</LinearLayout>
