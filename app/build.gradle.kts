@@ -13,6 +13,19 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+    signingConfigs {
+        create("fixed") {
+            storeFile = file("keystore.jks")
+            storePassword = "wifiband123"
+            keyAlias = "wifiband"
+            keyPassword = "wifiband123"
+        }
+    }
+    buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("fixed")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
