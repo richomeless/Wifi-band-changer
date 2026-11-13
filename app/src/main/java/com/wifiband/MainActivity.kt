@@ -16,7 +16,6 @@ class MainActivity : Activity() {
     private lateinit var fSsid: EditText
     private lateinit var fPass: EditText
     private lateinit var fSec: EditText
-    private lateinit var fPrefix: EditText
 
     private val permListener = Shizuku.OnRequestPermissionResultListener { _, result ->
         runOnUiThread {
@@ -50,7 +49,6 @@ class MainActivity : Activity() {
         fSsid = field("Network name (SSID)", "ssid")
         fPass = field("Password", "pass", true)
         fSec = field("Security: wpa2 or wpa3", "sec")
-        fPrefix = field("BSSID prefix (optional, e.g. ac:47:1b)", "prefix")
 
         btn("Allow Shizuku") {
             when {
@@ -63,10 +61,8 @@ class MainActivity : Activity() {
             Thread {
                 val out = Shell.run("cmd wifi status")
                 val s = Regex("SSID: \"([^\"]+)\"").find(out)?.groupValues?.get(1)
-                val b = Regex("BSSID: ([0-9a-fA-F:]{17})").find(out)?.groupValues?.get(1)
                 runOnUiThread {
                     if (s != null) fSsid.setText(s)
-                    if (b != null) fPrefix.setText(b.substring(0, 8).lowercase())
                     status.text = if (s != null) "Filled from $s. Now type the password and Save." else "Not connected, or Shizuku not allowed"
                 }
             }.start()
@@ -81,7 +77,7 @@ class MainActivity : Activity() {
         col.addView(status)
 
         val hint = TextView(this)
-        hint.text = "Then add the widget from the home screen widgets list: Wi-Fi Band."
+        hint.text = "Picks the strongest router of the chosen band automatically. Then add the widget from the home screen widgets list: Wi-Fi Band."
         hint.setPadding(0, pad, 0, 0)
         col.addView(hint)
 
@@ -101,7 +97,6 @@ class MainActivity : Activity() {
         Cfg.set(this, "ssid", fSsid.text.toString().trim())
         Cfg.set(this, "pass", fPass.text.toString())
         Cfg.set(this, "sec", fSec.text.toString().trim())
-        Cfg.set(this, "prefix", fPrefix.text.toString().trim())
     }
 
     private fun test(band: String) {

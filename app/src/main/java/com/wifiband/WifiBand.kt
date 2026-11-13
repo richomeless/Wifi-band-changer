@@ -10,17 +10,18 @@ object WifiBand {
 
     private fun q(s: String) = "'" + s.replace("'", "'\\''") + "'"
 
-    fun findBssid(ctx: Context, band: String): String? {
+    /** Strongest access point of the given band among ALL routers broadcasting this SSID. */
+    fun findBssid(ctx: Context, band: String): Pair<String, Int>? {
         val ssid = Cfg.get(ctx, "ssid")
-        val prefix = Cfg.get(ctx, "prefix").trim().lowercase()
         val range = if (band == "5") 4900..5900 else 2400..2500
+        Shell.run("cmd wifi start-scan")
+        Thread.sleep(1500)
         var best: String? = null
         var bestRssi = -999
         for (line in Shell.run("cmd wifi list-scan-results").lines()) {
             val m = scanRe.find(line) ?: continue
             val (bssid, f, r, name) = m.destructured
             if (name.trim() != ssid) continue
-            if (prefix.isNotEmpty() && !bssid.lowercase().startsWith(prefix)) continue
             if (f.toInt() !in range) continue
             val rssi = r.toInt()
             if (rssi > bestRssi) {
@@ -28,7 +29,7 @@ object WifiBand {
                 best = bssid
             }
         }
-        return best
+        return if (best != null) Pair(best, bestRssi) else null
     }
 
     private fun savedIds(ssid: String): List<String> =
@@ -53,8 +54,11 @@ object WifiBand {
         val label = when (band) { "5" -> "5 GHz"; "24" -> "2.4 GHz"; else -> "Auto" }
 
         var bssid: String? = null
+        var rssi = 0
         if (band != "auto") {
-            bssid = findBssid(ctx, band) ?: return "No $label signal found for $ssid"
+            val found = findBssid(ctx, band) ?: return "No $label signal found for $ssid"
+            bssid = found.first
+            rssi = found.second
         }
         savedIds(ssid).forEach { Shell.run("cmd wifi forget-network $it") }
         val out = connect(ssid, sec, pass, bssid)
@@ -63,6 +67,6 @@ object WifiBand {
             if (bssid != null) connect(ssid, sec, pass, null)
             return "Failed: " + out.take(80)
         }
-        return "$label ✓"
+        return if (bssid != null) "$label ✓ ($rssi dBm)" else "$label ✓"
     }
 }

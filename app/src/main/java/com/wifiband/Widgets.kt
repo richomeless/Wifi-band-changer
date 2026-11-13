@@ -40,7 +40,7 @@ class BandReceiver : BroadcastReceiver() {
             try {
                 val msg = WifiBand.apply(app, band)
                 Updater.toast(app, msg)
-                Thread.sleep(2500)
+                Thread.sleep(2000)
                 Updater.updateAll(app)
             } finally {
                 pending.finish()
