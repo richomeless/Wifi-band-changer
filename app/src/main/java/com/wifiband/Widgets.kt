@@ -12,10 +12,21 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.RemoteViews
 import android.widget.Toast
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 open class BaseProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        Updater.updateAll(context)
+        val app = context.applicationContext
+        val pending = goAsync()
+        Thread {
+            try {
+                Updater.updateAll(app)
+            } finally {
+                pending.finish()
+            }
+        }.start()
     }
 }
 
@@ -38,10 +49,15 @@ class BandReceiver : BroadcastReceiver() {
         val pending = goAsync()
         Thread {
             try {
-                val msg = WifiBand.apply(app, band)
-                Updater.toast(app, msg)
-                Thread.sleep(2000)
-                Updater.updateAll(app)
+                if (band == "refresh") {
+                    Updater.updateAll(app)
+                    Updater.toast(app, "Refreshed")
+                } else {
+                    val msg = WifiBand.apply(app, band)
+                    Updater.toast(app, msg)
+                    Thread.sleep(2000)
+                    Updater.updateAll(app)
+                }
             } finally {
                 pending.finish()
             }
@@ -62,20 +78,36 @@ object Updater {
         }
     }
 
+    class Info(val freq: Int, val rssi: Int, val bssid: String)
+
     @Suppress("DEPRECATION")
-    private fun info(c: Context): Pair<Int, Int> = try {
-        val wm = c.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val i = wm.connectionInfo
-        Pair(i.frequency, i.rssi)
-    } catch (e: Throwable) {
-        Pair(-1, 0)
+    private fun info(c: Context): Info {
+        if (Shell.ready()) {
+            val out = Shell.run("cmd wifi status")
+            val f = Regex("Frequency: (\\d+)").find(out)?.groupValues?.get(1)?.toIntOrNull()
+            if (f != null) {
+                val r = Regex("RSSI: (-?\\d+)").find(out)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+                val b = Regex("BSSID: ([0-9a-fA-F:]{17})").find(out)?.groupValues?.get(1) ?: ""
+                return Info(f, r, b)
+            }
+        }
+        return try {
+            val wm = c.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val i = wm.connectionInfo
+            Info(i.frequency, i.rssi, "")
+        } catch (e: Throwable) {
+            Info(-1, 0, "")
+        }
     }
 
     private fun build(c: Context, v: Variant): RemoteViews {
         val rv = RemoteViews(c.packageName, v.layout)
-        val (f, rssi) = info(c)
+        val inf = info(c)
+        val f = inf.freq
         val is5 = f in 4900..5900
         val is24 = f in 2400..2500
+        val tail = if (inf.bssid.length >= 5) " · " + inf.bssid.takeLast(5) else ""
+        val time = " · " + SimpleDateFormat("HH:mm", Locale.US).format(Date())
 
         rv.setInt(R.id.root, "setBackgroundResource", if (v.glass) R.drawable.bg_glass else R.drawable.bg_solid)
 
@@ -84,9 +116,9 @@ object Updater {
             rv.setTextViewText(R.id.title, ssid)
             rv.setTextColor(R.id.title, c.getColor(if (v.glass) R.color.glass_text else R.color.solid_text))
             val sub = when {
-                is5 -> "5 GHz · $rssi dBm"
-                is24 -> "2.4 GHz · $rssi dBm"
-                else -> "Not connected"
+                is5 -> "5 GHz · ${inf.rssi} dBm$tail$time"
+                is24 -> "2.4 GHz · ${inf.rssi} dBm$tail$time"
+                else -> "Not connected$time"
             }
             rv.setTextViewText(R.id.subtitle, sub)
             rv.setTextColor(R.id.subtitle, c.getColor(if (v.glass) R.color.glass_dim else R.color.solid_dim))
@@ -95,6 +127,7 @@ object Updater {
         button(c, rv, R.id.btn5, "5", v.glass, is5)
         button(c, rv, R.id.btn24, "24", v.glass, is24)
         button(c, rv, R.id.btnauto, "auto", v.glass, false)
+        button(c, rv, R.id.btnrefresh, "refresh", v.glass, false)
         return rv
     }
 

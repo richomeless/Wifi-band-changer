@@ -27,4 +27,17 @@
         android:background="@drawable/btn_glass"
         android:text="Auto"
         android:textColor="@color/glass_text" />
+
+    <TextView
+        android:id="@+id/btnrefresh"
+        android:layout_width="46dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/btn_glass"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="↻"
+        android:textColor="@color/glass_text"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 </LinearLayout>
