@@ -113,7 +113,8 @@ object Updater {
 
         if (v.text) {
             val ssid = Cfg.get(c, "ssid").ifBlank { "Wi-Fi band" }
-            rv.setTextViewText(R.id.title, ssid)
+            val roamTag = if (Cfg.get(c, "mode", "auto") != "auto") " · roaming" else ""
+            rv.setTextViewText(R.id.title, ssid + roamTag)
             rv.setTextColor(R.id.title, c.getColor(if (v.glass) R.color.glass_text else R.color.solid_text))
             val sub = when {
                 is5 -> "5 GHz · ${inf.rssi} dBm$tail$time"

@@ -16,6 +16,7 @@ class MainActivity : Activity() {
     private lateinit var fSsid: EditText
     private lateinit var fPass: EditText
     private lateinit var fSec: EditText
+    private lateinit var fWeak: EditText
 
     private val permListener = Shizuku.OnRequestPermissionResultListener { _, result ->
         runOnUiThread {
@@ -33,7 +34,7 @@ class MainActivity : Activity() {
         fun field(hint: String, key: String, pwd: Boolean = false): EditText {
             val e = EditText(this)
             e.hint = hint
-            e.setText(Cfg.get(this, key, if (key == "sec") "wpa2" else ""))
+            e.setText(Cfg.get(this, key, when (key) { "sec" -> "wpa2"; "weak" -> "-65"; else -> "" }))
             if (pwd) e.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             col.addView(e)
             return e
@@ -49,6 +50,7 @@ class MainActivity : Activity() {
         fSsid = field("Network name (SSID)", "ssid")
         fPass = field("Password", "pass", true)
         fSec = field("Security: wpa2 or wpa3", "sec")
+        fWeak = field("Roam when signal weaker than (dBm)", "weak")
 
         btn("Allow Shizuku") {
             when {
@@ -77,7 +79,7 @@ class MainActivity : Activity() {
         col.addView(status)
 
         val hint = TextView(this)
-        hint.text = "Picks the strongest router of the chosen band automatically. Then add the widget from the home screen widgets list: Wi-Fi Band."
+        hint.text = "5 GHz / 2.4 GHz: connects to the strongest router of that band and keeps roaming to the strongest one as you move (a notification shows while it runs; Auto stops it). Then add the widget from the home screen widgets list: Wi-Fi Band."
         hint.setPadding(0, pad, 0, 0)
         col.addView(hint)
 
@@ -86,6 +88,12 @@ class MainActivity : Activity() {
         setContentView(sv)
 
         Shizuku.addRequestPermissionResultListener(permListener)
+
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2)
+        }
     }
 
     override fun onDestroy() {
@@ -97,6 +105,7 @@ class MainActivity : Activity() {
         Cfg.set(this, "ssid", fSsid.text.toString().trim())
         Cfg.set(this, "pass", fPass.text.toString())
         Cfg.set(this, "sec", fSec.text.toString().trim())
+        Cfg.set(this, "weak", fWeak.text.toString().trim())
     }
 
     private fun test(band: String) {
