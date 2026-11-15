@@ -83,15 +83,11 @@ object WifiBand {
 
         if (band == "auto") {
             val err = connect(ctx, null)
-            Cfg.set(ctx, "mode", "auto")
-            RoamService.sync(ctx)
             return if (err == null) "Auto ✓" else "Failed: $err"
         }
 
         val best = best(scanAps(ctx), band) ?: return "No $label signal found for $ssid"
         val err = connect(ctx, best.bssid)
-        Cfg.set(ctx, "mode", if (err == null) band else "auto")
-        RoamService.sync(ctx)
-        return if (err == null) "$label ✓ (${best.rssi} dBm) · auto-roam on" else "Failed: $err"
+        return if (err == null) "$label ✓ (${best.rssi} dBm)" else "Failed: $err"
     }
 }
