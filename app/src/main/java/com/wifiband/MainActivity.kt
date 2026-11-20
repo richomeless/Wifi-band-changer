@@ -37,9 +37,6 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dp = resources.displayMetrics.density
-        val night = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        val bars = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-        window.insetsController?.setSystemBarsAppearance(if (night) 0 else bars, bars)
         val pad = (16 * dp).toInt()
         val col = LinearLayout(this)
         col.orientation = LinearLayout.VERTICAL
@@ -117,6 +114,11 @@ class MainActivity : Activity() {
         val sv = ScrollView(this)
         sv.addView(col)
         setContentView(sv)
+        try {
+            val night = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            val bars = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+            window.decorView.windowInsetsController?.setSystemBarsAppearance(if (night) 0 else bars, bars)
+        } catch (_: Throwable) {}
 
         Shizuku.addRequestPermissionResultListener(permListener)
     }
